@@ -1,31 +1,12 @@
-"""
-Dagster Katas — Experiment 001: Atomic Hello World
-
-This file is the target state of the kata.
-Do NOT read ahead. Work through experiments 0–3 one at a time.
-
-Target code (final form):
-
-    import dagster as dg
-
-    @dg.asset
-    def hello() -> str:
-        return "hello, dagster"
-
-    if __name__ == "__main__":
-        result = dg.materialize_to_memory([hello])
-        assert result.success
-        assert result.asset_value("hello") == "hello, dagster"
-        print(f"Run ID: {result.run_id}")
-"""
-
 # --- Experiment 0: Python Baseline (Negative Control) ---
-# Uncomment and run this first, without Dagster.
-# print("hello")
+# Question: What can plain Python do on its own?
+print("hello")
 
 
 # --- Experiment 1: Asset Definition ---
-# Introduce @dg.asset. Observe that importing does NOT execute the function.
+# Question: What does @dg.asset add to a plain Python function?
+# Uncomment the block below, then run this file again.
+
 # import dagster as dg
 #
 # @dg.asset
@@ -37,7 +18,9 @@ Target code (final form):
 
 
 # --- Experiment 2: Materialization ---
-# Execute the asset through Dagster's in-process materialization API.
+# Question: How does Dagster actually execute an asset and record the result?
+# Replace Experiment 1 with the block below, then run.
+
 # import dagster as dg
 #
 # @dg.asset
@@ -58,7 +41,9 @@ Target code (final form):
 
 
 # --- Experiment 3: Controlled Failure ---
-# Modify the asset to raise, then run with raise_on_error=False.
+# Question: How does Dagster report a computation that raises an exception?
+# Replace the asset body with a raise, then run with raise_on_error=False.
+
 # import dagster as dg
 #
 # @dg.asset
