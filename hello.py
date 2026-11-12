@@ -25,9 +25,17 @@ print("PASS: Asset definition did not execute the compute function")
 print("Before materialization:", compute_calls)
 result = dg.materialize_to_memory([hello])
 
+# Verify execution succeeded
+assert result.success, "Materialization failed"
+print("Run ID:", result.run_id)
 
+# Verify compute function was called exactly once
+assert compute_calls == ["hello"], f"Unexpected compute_calls: {compute_calls}"
+
+# Verify asset value
 value = result.asset_value("hello")
-print(value)
+assert value == "hello, dagster", f"Unexpected value: {value}"
+print("Value:", value)
 
 # Inspect materialization events
 materialization_events = [
@@ -36,6 +44,9 @@ materialization_events = [
     if event.event_type_value == "ASSET_MATERIALIZATION"
 ]
 
+assert len(materialization_events) == 1, f"Expected 1 materialization event, got {len(materialization_events)}"
 print(f"Materialization events: {len(materialization_events)}")
 for event in materialization_events:
     print(f"  - {event.event_type_value}")
+
+print("PASS: Asset materialization succeeded")

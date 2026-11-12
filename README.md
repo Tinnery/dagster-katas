@@ -41,7 +41,7 @@ uv sync --locked
 
 **Question:** What can plain Python do on its own?
 
-Run:
+To run Experiment 0 in isolation, comment out Experiments 1 and 2, then run:
 ```bash
 uv run hello.py
 ```
@@ -59,20 +59,22 @@ This is the baseline. Python executes code and prints output, but provides no as
 
 **Question:** What does `@dg.asset` add to a plain Python function?
 
-In `hello.py`, uncomment the Experiment 1 block and comment out Experiment 0.
+The current `hello.py` runs Experiment 1 first, then Experiment 2 in sequence.
 
-Run:
+Focus on the first part of the output:
+
 ```bash
 uv run hello.py
 ```
 
-Expected output:
+Expected output (Experiment 1 portion):
 ```
-Asset defined: <dagster._core.definitions.assets.Asset object at 0x...>
-Asset key: AssetKey(['hello'])
+Asset key path: ['hello']
+[]
+PASS: Asset definition did not execute the compute function
 ```
 
-**Observation:** The function is now a Dagster asset definition. Importing or defining the asset does NOT execute the function body. This is the distinction between *definition time* and *execution time*.
+**Observation:** The function is now a Dagster asset definition. Defining the asset does NOT execute the function body. The `compute_calls` list remains empty. This is the distinction between *definition time* and *execution time*.
 
 ---
 
@@ -80,28 +82,24 @@ Asset key: AssetKey(['hello'])
 
 **Question:** How does Dagster actually execute an asset and record the result?
 
-Replace Experiment 1 with the Experiment 2 block.
+The second part of `hello.py` calls `materialize_to_memory([hello])` and verifies the result.
 
-Run:
-```bash
-uv run hello.py
+Expected output (Experiment 2 portion):
 ```
-
-Expected output:
-```
-Run ID:    <uuid>
-Success:   True
-Value:     hello, dagster
-Events:    <N>
-  - <event_type>
-  - ...
+Before materialization: []
+COMPUTE FUNCTION EXECUTED
+Run ID: <uuid>
+Value: hello, dagster
+Materialization events: 1
+  - ASSET_MATERIALIZATION
+PASS: Asset materialization succeeded
 ```
 
 **Observation:** Dagster provides:
 - A Run ID for this execution
-- A success/failure status
-- The computed asset value
-- Materialization events
+- A success/failure status (via `result.success`)
+- The computed asset value (via `result.asset_value("hello")`)
+- Materialization events (via `result.all_events`)
 
 This is what Dagster adds beyond plain Python.
 
@@ -138,8 +136,8 @@ You have completed Scratch 001 when:
 3. ✅ In-memory materialization succeeds (Experiment 2)
 4. ✅ Asset value matches expected literal
 5. ✅ Materialization events observed
-6. ✅ Controlled failure correctly reported (Experiment 3)
-7. ✅ You can explain the difference between Python execution and Dagster materialization
+6. ⬜ Controlled failure correctly reported (Experiment 3)
+7. ⬜ You can explain the difference between Python execution and Dagster materialization
 
 ## Environment
 
